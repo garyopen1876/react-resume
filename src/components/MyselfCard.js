@@ -97,7 +97,7 @@ export default function MyselfCard() {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        聯絡資訊
+        <Typography sx={{ fontWeight: "bold" }}>聯絡資訊</Typography>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
@@ -109,20 +109,16 @@ export default function MyselfCard() {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Box mt={2}>
+          <Box>
             <Grid container spacing={4} columns={{ xs: 4, sm: 4, md: 12 }}>
               <Grid item xs={4}>
                 <Link href="tel:+886-919612283" underline="none">
                   <LocalPhoneIcon sx={{ fontSize: 25 }} />
-                  <Typography variant="body2">0919-612283</Typography>
                 </Link>
               </Grid>
               <Grid item xs={4}>
                 <Link href="mailto:garyopen1876@gmail.com" underline="none">
                   <EmailIcon sx={{ fontSize: 25 }} />
-                  <Typography variant="body2">
-                    garyopen1876@gmail.com
-                  </Typography>
                 </Link>
               </Grid>
               <Grid item xs={4}>
@@ -133,9 +129,6 @@ export default function MyselfCard() {
                   rel="noreferrer noopenner"
                 >
                   <GitHubIcon sx={{ fontSize: 25 }} />
-                  <Typography variant="body2">
-                    https://github.com/garyopen1876
-                  </Typography>
                 </Link>
               </Grid>
             </Grid>
