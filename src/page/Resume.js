@@ -1,12 +1,39 @@
+import * as React from "react";
 import "./Resume.css";
 import SkillBox from "../components/SkillBox.js";
 import MyselfCard from "../components/MyselfCard.js";
 import Timeline from "../components/Timeline.js";
 import Collections from "../components/Collections.js";
 import Grid from "@mui/material/Grid";
+import axios from "../Axios.config.js";
 import Typography from "@mui/material/Typography";
 
 function Resume() {
+  const [messageData, setMessageData] = React.useState([]);
+
+  const loadingData = React.useCallback(() => {
+    const loadData = async () => {
+      await axios
+        .get("api/message")
+        .then((response) => {
+          const resMessageData = response["data"]["data"];
+          setMessageData(resMessageData);
+        })
+        .catch((error) => {
+          console.log(error.response.data["message"]);
+          //overtime
+          if (error.response.status === 402 || 403) {
+            localStorage.removeItem("login_token");
+          }
+        });
+    };
+    loadData();
+  }, []);
+
+  React.useEffect(() => {
+    loadingData();
+  }, [loadingData]);
+
   return (
     <div>
       <div className="Basic">
@@ -81,6 +108,28 @@ function Resume() {
                   }}
                 />
                 <Collections />
+              </Grid>
+              <Typography
+                variant="h5"
+                sx={{ p: 5, mb: -5, fontWeight: "bold" }}
+                color="#B5B5B5"
+              >
+                留言 Comment
+              </Typography>
+              <Grid container justifyContent="center" alignItems="center">
+                <hr
+                  style={{
+                    width: "90%",
+                    height: 3,
+                    backgroundColor: "#C9C9C9",
+                    borderColor: "#FFF3DE",
+                  }}
+                />
+                <div className="col">
+                  {messageData.map((message) => (
+                    <div>{message.content}</div>
+                  ))}
+                </div>
               </Grid>
             </div>
           </div>
