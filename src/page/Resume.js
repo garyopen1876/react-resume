@@ -3,6 +3,7 @@ import "./Resume.css";
 import SkillBox from "../components/SkillBox.js";
 import MyselfCard from "../components/MyselfCard.js";
 import Timeline from "../components/Timeline.js";
+import MessageBoard from "../components/MessageBoard.js";
 import Collections from "../components/Collections.js";
 import Grid from "@mui/material/Grid";
 import axios from "../Axios.config.js";
@@ -10,6 +11,31 @@ import Typography from "@mui/material/Typography";
 
 function Resume() {
   const [messageData, setMessageData] = React.useState([]);
+
+  const sendMessage = async (message_content) => {
+    const head = {};
+    if (localStorage.getItem("login_token")) {
+      head.push(localStorage.getItem("login_token"));
+    }
+
+    await axios
+      .post(
+        "api/message",
+        {
+          content: message_content,
+        },
+        {
+          headers: head,
+        }
+      )
+      .then((response) => {
+        console.log(response["data"]["message"]);
+        loadingData();
+      })
+      .catch((error) => {
+        console.log(error.response.data["message"]);
+      });
+  };
 
   const loadingData = React.useCallback(() => {
     const loadData = async () => {
@@ -21,10 +47,6 @@ function Resume() {
         })
         .catch((error) => {
           console.log(error.response.data["message"]);
-          //overtime
-          if (error.response.status === 402 || 403) {
-            localStorage.removeItem("login_token");
-          }
         });
     };
     loadData();
@@ -125,11 +147,7 @@ function Resume() {
                     borderColor: "#FFF3DE",
                   }}
                 />
-                <div className="col">
-                  {messageData.map((message) => (
-                    <div>{message.content}</div>
-                  ))}
-                </div>
+                <MessageBoard data={messageData} sendMessage={sendMessage} />
               </Grid>
             </div>
           </div>
