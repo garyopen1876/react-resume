@@ -12,10 +12,26 @@ import Typography from "@mui/material/Typography";
 function Resume() {
   const [messageData, setMessageData] = React.useState([]);
 
+  const loadingData = React.useCallback(() => {
+    const loadData = async () => {
+      await axios
+        .get("api/message")
+        .then((response) => {
+          const resMessageData = response["data"]["data"];
+          setMessageData(resMessageData);
+        })
+        .catch((error) => {
+          console.log(error.response.data["message"]);
+        });
+    };
+    loadData();
+  }, []);
+
   const sendMessage = async (message_content) => {
-    const head = {};
+    let head = {};
+
     if (localStorage.getItem("login_token")) {
-      head.push(localStorage.getItem("login_token"));
+      head = { token : localStorage.getItem("login_token") };
     }
 
     await axios
@@ -37,20 +53,20 @@ function Resume() {
       });
   };
 
-  const loadingData = React.useCallback(() => {
-    const loadData = async () => {
-      await axios
-        .get("api/message")
-        .then((response) => {
-          const resMessageData = response["data"]["data"];
-          setMessageData(resMessageData);
-        })
-        .catch((error) => {
-          console.log(error.response.data["message"]);
-        });
-    };
-    loadData();
-  }, []);
+  const onHandleLogin = async (username, password) => {
+    await axios
+      .post("api/login", {
+        username: username,
+        password: password,
+      })
+      .then((response) => {
+        const token = response["data"]["token"];
+        localStorage.setItem("login_token", token);
+      })
+      .catch((error) => {
+        console.log(error.response.data["message"]);
+      });
+  };
 
   React.useEffect(() => {
     loadingData();
@@ -147,7 +163,7 @@ function Resume() {
                     borderColor: "#FFF3DE",
                   }}
                 />
-                <MessageBoard data={messageData} sendMessage={sendMessage} />
+                <MessageBoard data={messageData} sendMessage={sendMessage}  onHandleLogin={onHandleLogin}/>
               </Grid>
             </div>
           </div>

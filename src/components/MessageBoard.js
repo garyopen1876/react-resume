@@ -10,8 +10,9 @@ import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
+import LoginDialog from "./LoginDialog.js";
 
-export default function AlignItemsList(props) {
+export default function MessageBoard(props) {
   const [messageContent, setMessageContent] = React.useState("");
   const handleSend = async () => {
     await props.sendMessage(messageContent);
@@ -58,7 +59,7 @@ export default function AlignItemsList(props) {
           width: "80%",
         }}
       >
-        <Avatar alt={props.username} src="/static/images/avatar/1.jpg" />
+        <LoginDialog onHandleLogin={props.onHandleLogin}/>
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder="請輸入留言"
