@@ -1,6 +1,7 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -12,6 +13,8 @@ export default function LoginDialog(props) {
   const [username, setUsername] = React.useState();
   const [password, setPassword] = React.useState();
   const [hidden, setHidden] = React.useState(false);
+  const [hiddenAlert, setHiddenAlert] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState("");
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -28,15 +31,22 @@ export default function LoginDialog(props) {
   };
 
   const handleClose = () => {
+    setHiddenAlert(false);
     setOpen(false);
   };
 
   const handleLogin = async () => {
-    await props.onHandleLogin(username, password);
+    const res = await props.onHandleLogin(username, password);
+    if (res[0] === true) {
+      setToken(localStorage.getItem("login_token"));
+      setHiddenAlert(false);
+      setOpen(false);
+    } else {
+      setHiddenAlert(true);
+      setAlertMessage(res[1]);
+    }
     setUsername();
     setPassword();
-    setToken(localStorage.getItem("login_token"));
-    setOpen(false);
   };
 
   const handleLogout = () => {
@@ -65,10 +75,14 @@ export default function LoginDialog(props) {
       )}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>登入</DialogTitle>
+        {hiddenAlert ? (
+          <Alert sx={{ width: "95%" }} severity="error">
+            {alertMessage}
+          </Alert>
+        ) : null}
         <DialogContent>
           <TextField
             autoFocus
-            required
             margin="dense"
             id="username"
             label="帳號"
@@ -78,7 +92,6 @@ export default function LoginDialog(props) {
             onChange={onChangeUsername}
           />
           <TextField
-            required
             margin="dense"
             id="password"
             label="密碼"

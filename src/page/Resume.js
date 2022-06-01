@@ -31,7 +31,7 @@ function Resume() {
     let head = {};
 
     if (localStorage.getItem("login_token")) {
-      head = { token : localStorage.getItem("login_token") };
+      head = { token: localStorage.getItem("login_token") };
     }
 
     await axios
@@ -54,6 +54,12 @@ function Resume() {
   };
 
   const onHandleLogin = async (username, password) => {
+    let loginCheck = [false, ""];
+
+    if (!username || !password) {
+      return [false, "請填入帳號密碼"];
+    }
+
     await axios
       .post("api/login", {
         username: username,
@@ -62,10 +68,12 @@ function Resume() {
       .then((response) => {
         const token = response["data"]["token"];
         localStorage.setItem("login_token", token);
+        loginCheck = [true, response.data["message"]];
       })
       .catch((error) => {
-        console.log(error.response.data["message"]);
+        loginCheck = [false, error.response.data["message"]];
       });
+    return loginCheck;
   };
 
   React.useEffect(() => {
@@ -152,7 +160,7 @@ function Resume() {
                 sx={{ p: 5, mb: -5, fontWeight: "bold" }}
                 color="#B5B5B5"
               >
-                留言 Comment
+                留言版 Message Board
               </Typography>
               <Grid container justifyContent="center" alignItems="center">
                 <hr
@@ -163,7 +171,11 @@ function Resume() {
                     borderColor: "#FFF3DE",
                   }}
                 />
-                <MessageBoard data={messageData} sendMessage={sendMessage}  onHandleLogin={onHandleLogin}/>
+                <MessageBoard
+                  data={messageData}
+                  sendMessage={sendMessage}
+                  onHandleLogin={onHandleLogin}
+                />
               </Grid>
             </div>
           </div>
