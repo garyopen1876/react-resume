@@ -5,13 +5,19 @@ import Alert from "@mui/material/Alert";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import SwipeableViews from "react-swipeable-views";
+import AppBar from "@mui/material/AppBar";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 export default function LoginDialog(props) {
   const [token, setToken] = React.useState(localStorage.getItem("login_token"));
   const [open, setOpen] = React.useState(false);
   const [username, setUsername] = React.useState();
   const [password, setPassword] = React.useState();
+  const [reUsername, setReUsername] = React.useState();
+  const [rePassword, setRePassword] = React.useState();
+  const [reEmail, setReEmail] = React.useState();
   const [hidden, setHidden] = React.useState(false);
   const [hiddenAlert, setHiddenAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
@@ -24,6 +30,31 @@ export default function LoginDialog(props) {
   const onChangePassword = (e) => {
     const password = e.target.value;
     setPassword(password);
+  };
+
+  const onChangeReUsername = (e) => {
+    const reUsername = e.target.value;
+    setReUsername(reUsername);
+  };
+
+  const onChangeRePassword = (e) => {
+    const rePassword = e.target.value;
+    setRePassword(rePassword);
+  };
+
+  const onChangeReEmail = (e) => {
+    const reEmail = e.target.value;
+    setReEmail(reEmail);
+  };
+
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (e, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleChangeIndex = (index) => {
+    setValue(index);
   };
 
   const handleClickOpen = () => {
@@ -41,18 +72,35 @@ export default function LoginDialog(props) {
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
+      setUsername();
+      setPassword();
       window.location.reload();
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
     }
-    setUsername();
-    setPassword();
+  };
+
+  const handleRegister = async () => {
+    const res = await props.onHandleRegister(reUsername, rePassword, reEmail);
+    if (res[0] === true) {
+      setToken(localStorage.getItem("login_token"));
+      setHiddenAlert(false);
+      setOpen(false);
+      setReUsername();
+      setRePassword();
+      setReEmail();
+      window.location.reload();
+    } else {
+      setHiddenAlert(true);
+      setAlertMessage(res[1]);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("login_token");
     setToken();
+    window.location.reload();
   };
 
   React.useEffect(() => {
@@ -75,37 +123,89 @@ export default function LoginDialog(props) {
         </Button>
       )}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>登入🔒</DialogTitle>
-        {hiddenAlert ? (
-          <Alert sx={{ width: "95%" }} severity="error">
-            {alertMessage}
-          </Alert>
-        ) : null}
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="username"
-            label="帳號"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={onChangeUsername}
-          />
-          <TextField
-            margin="dense"
-            id="password"
-            label="密碼"
-            type="password"
-            fullWidth
-            variant="standard"
-            onChange={onChangePassword}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>取消</Button>
-          <Button onClick={handleLogin}>登入</Button>
-        </DialogActions>
+        <AppBar position="static" color="default">
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            aria-label="action tabs example"
+          >
+            <Tab label="登入🔒" />
+            <Tab label="註冊📝" />
+          </Tabs>
+        </AppBar>
+        <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
+          <div value={value} index={0}>
+            {hiddenAlert ? (
+              <Alert severity="error">{alertMessage}</Alert>
+            ) : null}
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="username"
+                label="帳號"
+                type="text"
+                fullWidth
+                variant="standard"
+                onChange={onChangeUsername}
+              />
+              <TextField
+                margin="dense"
+                id="password"
+                label="密碼"
+                type="password"
+                fullWidth
+                variant="standard"
+                onChange={onChangePassword}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>取消</Button>
+              <Button onClick={handleLogin}>登入</Button>
+            </DialogActions>
+          </div>
+          <div value={value} index={1}>
+            {hiddenAlert ? (
+              <Alert severity="error">{alertMessage}</Alert>
+            ) : null}
+            <DialogContent>
+              <TextField
+                margin="dense"
+                id="username"
+                label="帳號"
+                type="text"
+                fullWidth
+                variant="standard"
+                onChange={onChangeReUsername}
+              />
+              <TextField
+                margin="dense"
+                id="password"
+                label="密碼"
+                type="password"
+                fullWidth
+                variant="standard"
+                onChange={onChangeRePassword}
+              />
+              <TextField
+                margin="dense"
+                id="email"
+                label="email"
+                type="text"
+                fullWidth
+                variant="standard"
+                onChange={onChangeReEmail}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>取消</Button>
+              <Button onClick={handleRegister}>註冊</Button>
+            </DialogActions>
+          </div>
+        </SwipeableViews>
       </Dialog>
     </div>
   );

@@ -14,27 +14,19 @@ import LoginDialog from "./LoginDialog.js";
 import messageBackground from "../img/message_background.jpg";
 import messagePaper from "../img/message_paper.jpg";
 import JwtDecode from "jwt-decode";
-import CreateIcon from "@mui/icons-material/Create";
-import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "./EditMessage";
+import DeleteIcon from "./DeleteMessage";
 
 export default function MessageBoard(props) {
   const [messageContent, setMessageContent] = React.useState("");
   const [username, setUsername] = React.useState("");
+  
   const handleSend = async () => {
     const sendCheck = await props.sendMessage(messageContent);
     setMessageContent("");
     if (sendCheck[1] === "token錯誤") {
       localStorage.removeItem("login_token");
-      alert("登入逾時，重新整理");
-      window.location.reload();
-    }
-  };
-
-  const handleDelete = async (message_id) => {
-    const deleteCheck = await props.deleteMessage(message_id);
-    if (deleteCheck[1] === "token錯誤") {
-      localStorage.removeItem("login_token");
-      alert("登入逾時，重新整理");
+      alert("登入逾時，請重新登入");
       window.location.reload();
     }
   };
@@ -67,10 +59,17 @@ export default function MessageBoard(props) {
             {message.owner === username ? (
               <div style={{ textAlign: "right" }}>
                 <IconButton size="small">
-                  <CreateIcon />
+                  <EditIcon
+                    editMessage={props.editMessage}
+                    messageId={message.id}
+                    messageContent={message.content}
+                  />
                 </IconButton>
-                <IconButton onClick={() => handleDelete(message.id)} size="small">
-                  <DeleteIcon />
+                <IconButton size="small">
+                  <DeleteIcon
+                    deleteMessage={props.deleteMessage}
+                    messageId={message.id}
+                  />
                 </IconButton>
               </div>
             ) : null}
@@ -133,7 +132,7 @@ export default function MessageBoard(props) {
           margin: "auto",
         }}
       >
-        <LoginDialog onHandleLogin={props.onHandleLogin} />
+        <LoginDialog onHandleLogin={props.onHandleLogin} onHandleRegister={props.onHandleRegister}/>
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder="請輸入留言"
@@ -141,6 +140,7 @@ export default function MessageBoard(props) {
           onChange={(event) => {
             setMessageContent(event.target.value);
           }}
+          inputProps={{ maxLength: 50 }}
         />
         <IconButton
           onClick={handleSend}

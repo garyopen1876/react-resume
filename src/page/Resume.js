@@ -57,9 +57,8 @@ function Resume() {
 
   const onHandleLogin = async (username, password) => {
     let loginCheck = [false, ""];
-
     if (!username || !password) {
-      return [false, "請填入帳號密碼"];
+      return [false, "請填入帳號、密碼"];
     }
 
     await axios
@@ -78,6 +77,29 @@ function Resume() {
     return loginCheck;
   };
 
+  const onHandleRegister = async (username, password, email) => {
+    let registerCheck = [false, ""];
+    if (!username || !password|| !email) {
+      return [false, "請填入帳號、密碼、Email"];
+    }
+
+    await axios
+      .post("api/register", {
+        username: username,
+        password: password,
+        mail: email,
+      })
+      .then((response) => {
+        const token = response["data"]["token"];
+        localStorage.setItem("login_token", token);
+        registerCheck = [true, response.data["message"]];
+      })
+      .catch((error) => {
+        registerCheck = [false, error.response.data["message"]];
+      });
+    return registerCheck;
+  };
+
   const deleteMessage = async (message_id) => {
     let deleteCheck = [false, ""];
 
@@ -94,6 +116,30 @@ function Resume() {
         deleteCheck = [false, error.response.data["message"]];
       });
     return deleteCheck;
+  };
+
+  const editMessage = async (message_id, message_update_content) => {
+    let editCheck = [false, ""];
+
+    await axios
+      .put(
+        "api/message",
+        {
+          id: message_id,
+          content: message_update_content,
+        },
+        {
+          headers: { token: localStorage.getItem("login_token") },
+        }
+      )
+      .then((response) => {
+        loadingData();
+        editCheck = [true, response["data"]["message"]];
+      })
+      .catch((error) => {
+        editCheck = [false, error.response.data["message"]];
+      });
+    return editCheck;
   };
 
   React.useEffect(() => {
@@ -195,7 +241,9 @@ function Resume() {
                   data={messageData}
                   sendMessage={sendMessage}
                   onHandleLogin={onHandleLogin}
+                  onHandleRegister={onHandleRegister}
                   deleteMessage={deleteMessage}
+                  editMessage={editMessage}
                 />
               </Grid>
               <div>&nbsp;</div>
