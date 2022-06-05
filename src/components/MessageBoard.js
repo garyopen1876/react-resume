@@ -4,6 +4,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
@@ -12,61 +13,105 @@ import SendIcon from "@mui/icons-material/Send";
 import LoginDialog from "./LoginDialog.js";
 import messageBackground from "../img/message_background.jpg";
 import messagePaper from "../img/message_paper.jpg";
+import JwtDecode from "jwt-decode";
+import CreateIcon from "@mui/icons-material/Create";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function MessageBoard(props) {
   const [messageContent, setMessageContent] = React.useState("");
+  const [username, setUsername] = React.useState("");
   const handleSend = async () => {
-    await props.sendMessage(messageContent);
+    const sendCheck = await props.sendMessage(messageContent);
     setMessageContent("");
+    if (sendCheck[1] === "token錯誤") {
+      localStorage.removeItem("login_token");
+      alert("登入逾時，重新整理");
+      window.location.reload();
+    }
   };
+
+  const handleDelete = async (message_id) => {
+    const deleteCheck = await props.deleteMessage(message_id);
+    if (deleteCheck[1] === "token錯誤") {
+      localStorage.removeItem("login_token");
+      alert("登入逾時，重新整理");
+      window.location.reload();
+    }
+  };
+
+  React.useEffect(() => {
+    if (localStorage.getItem("login_token")) {
+      setUsername(JwtDecode(localStorage.getItem("login_token"))["username"]);
+    }
+  }, []);
 
   return (
     <List
       sx={{
-        width: "80%",
+        width: "90%",
+        border: 5,
+        borderRadius: "16px",
+        borderColor: "#976749",
         backgroundImage: `url(${messageBackground})`,
       }}
     >
       {props.data.map((message) => (
         <div>
-          <ListItem
-            alignItems="flex-start"
+          <Box
             sx={{
               width: "90%",
               margin: "auto",
               backgroundImage: `url(${messagePaper})`,
             }}
           >
-            <ListItemAvatar>
-              <Avatar alt={message.owner} src="https://anitar.dev/get/r" />
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Typography
-                  variant="body2"
-                  color="text.primary"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {message.owner}
-                </Typography>
-              }
-              secondary={
-                <React.Fragment>
-                  <Typography variant="body2" color="text.primary">
-                    {message.content}
-                  </Typography>
+            {message.owner === username ? (
+              <div style={{ textAlign: "right" }}>
+                <IconButton size="small">
+                  <CreateIcon />
+                </IconButton>
+                <IconButton onClick={() => handleDelete(message.id)} size="small">
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            ) : null}
+            <ListItem
+              alignItems="flex-start"
+              sx={{
+                width: "100%",
+                margin: "auto",
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar alt={message.owner} src="https://anitar.dev/get/r" />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
                   <Typography
-                    align="right"
                     variant="body2"
                     color="text.primary"
+                    sx={{ fontWeight: "bold" }}
                   >
-                    {message.createdAt.split(/[T.]/)[0]}{" "}
-                    {message.createdAt.split(/[T.]/)[1]}
+                    {message.owner}
                   </Typography>
-                </React.Fragment>
-              }
-            />
-          </ListItem>
+                }
+                secondary={
+                  <React.Fragment>
+                    <Typography variant="body2" color="text.primary">
+                      {message.content}
+                    </Typography>
+                    <Typography
+                      align="right"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      {message.createdAt.split(/[T.]/)[0]}{" "}
+                      {message.createdAt.split(/[T.]/)[1]}
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          </Box>
           <div>&nbsp;</div>
         </div>
       ))}
@@ -74,7 +119,7 @@ export default function MessageBoard(props) {
         style={{
           width: "95%",
           height: 3,
-          backgroundColor: "#C9C9C9",
+          backgroundColor: "#976749",
           borderColor: "#FFF3DE",
         }}
       />

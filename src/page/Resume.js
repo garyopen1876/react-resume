@@ -28,6 +28,7 @@ function Resume() {
   }, []);
 
   const sendMessage = async (message_content) => {
+    let sendCheck = [false, ""];
     let head = {};
 
     if (localStorage.getItem("login_token")) {
@@ -45,12 +46,13 @@ function Resume() {
         }
       )
       .then((response) => {
-        console.log(response["data"]["message"]);
         loadingData();
+        sendCheck = [true, response["data"]["message"]];
       })
       .catch((error) => {
-        console.log(error.response.data["message"]);
+        sendCheck = [false, error.response.data["message"]];
       });
+    return sendCheck;
   };
 
   const onHandleLogin = async (username, password) => {
@@ -74,6 +76,24 @@ function Resume() {
         loginCheck = [false, error.response.data["message"]];
       });
     return loginCheck;
+  };
+
+  const deleteMessage = async (message_id) => {
+    let deleteCheck = [false, ""];
+
+    await axios
+      .delete("api/message", {
+        headers: { token: localStorage.getItem("login_token") },
+        data: { id: message_id },
+      })
+      .then((response) => {
+        loadingData();
+        deleteCheck = [true, response["data"]["message"]];
+      })
+      .catch((error) => {
+        deleteCheck = [false, error.response.data["message"]];
+      });
+    return deleteCheck;
   };
 
   React.useEffect(() => {
@@ -175,8 +195,10 @@ function Resume() {
                   data={messageData}
                   sendMessage={sendMessage}
                   onHandleLogin={onHandleLogin}
+                  deleteMessage={deleteMessage}
                 />
               </Grid>
+              <div>&nbsp;</div>
             </div>
           </div>
         </body>

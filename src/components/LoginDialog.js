@@ -41,6 +41,7 @@ export default function LoginDialog(props) {
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
+      window.location.reload();
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
@@ -65,16 +66,16 @@ export default function LoginDialog(props) {
   return (
     <div>
       {!hidden ? (
-        <Button variant="outlined" onClick={handleClickOpen}>
+        <Button variant="contained" onClick={handleClickOpen}>
           登入
         </Button>
       ) : (
-        <Button variant="outlined" onClick={handleLogout}>
+        <Button variant="contained" onClick={handleLogout}>
           登出
         </Button>
       )}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>登入</DialogTitle>
+        <DialogTitle>登入🔒</DialogTitle>
         {hiddenAlert ? (
           <Alert sx={{ width: "95%" }} severity="error">
             {alertMessage}
