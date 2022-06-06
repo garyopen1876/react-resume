@@ -69,23 +69,6 @@ export default function MessageBoard(props) {
                 backgroundImage: `url(${messagePaper})`,
               }}
             >
-              {message.owner === username ? (
-                <div style={{ textAlign: "right" }}>
-                  <IconButton size="small">
-                    <EditIcon
-                      editMessage={props.editMessage}
-                      messageId={message.id}
-                      messageContent={message.content}
-                    />
-                  </IconButton>
-                  <IconButton size="small">
-                    <DeleteIcon
-                      deleteMessage={props.deleteMessage}
-                      messageId={message.id}
-                    />
-                  </IconButton>
-                </div>
-              ) : null}
               <ListItem
                 alignItems="flex-start"
                 sx={{
@@ -94,7 +77,7 @@ export default function MessageBoard(props) {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar alt={message.owner} src="https://anitar.dev/get/r" />
+                  <Avatar alt={message.owner} src="no" />
                 </ListItemAvatar>
                 <ListItemText
                   primary={
@@ -111,13 +94,31 @@ export default function MessageBoard(props) {
                       <Typography variant="body2" color="text.primary">
                         {message.content}
                       </Typography>
+                      {message.owner === username ? (
+                        <div style={{ textAlign: "right" }}>
+                          <IconButton size="small">
+                            <EditIcon
+                              editMessage={props.editMessage}
+                              messageId={message.id}
+                              messageContent={message.content}
+                            />
+                          </IconButton>
+                          <IconButton size="small">
+                            <DeleteIcon
+                              deleteMessage={props.deleteMessage}
+                              messageId={message.id}
+                            />
+                          </IconButton>
+                        </div>
+                      ) : null}
                       <Typography
                         align="right"
                         variant="body2"
                         color="text.primary"
                       >
-                        {message.createdAt.split(/[T.]/)[0]}{" "}
-                        {message.createdAt.split(/[T.]/)[1]}
+                        {new Date(message.createdAt).toLocaleString("en-US", {
+                          timeZone: "Asia/Taipei",
+                        })}
                       </Typography>
                     </React.Fragment>
                   }
@@ -132,8 +133,6 @@ export default function MessageBoard(props) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#D8D8EB",
-          width: "50%",
           margin: "auto",
         }}
       >
@@ -142,7 +141,6 @@ export default function MessageBoard(props) {
           page={page}
           onChange={handleChange}
           defaultPage={noOfPages}
-          variant="outlined"
           color="secondary"
         />
       </div>
@@ -160,7 +158,7 @@ export default function MessageBoard(props) {
           p: "2px 4px",
           display: "flex",
           alignItems: "center",
-          width: "95%",
+          width: "90%",
           margin: "auto",
         }}
       >

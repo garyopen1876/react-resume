@@ -9,10 +9,46 @@ import SwipeableViews from "react-swipeable-views";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Avatar from "@mui/material/Avatar";
+import { styled } from "@mui/material/styles";
+import Badge from "@mui/material/Badge";
+import Popover from "@mui/material/Popover";
+import Profile from "./Profile";
+import JwtDecode from "jwt-decode";
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    backgroundColor: "#44b700",
+    color: "#44b700",
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      animation: "ripple 1.2s infinite ease-in-out",
+      border: "1px solid currentColor",
+      content: '""',
+    },
+  },
+  "@keyframes ripple": {
+    "0%": {
+      transform: "scale(.8)",
+      opacity: 1,
+    },
+    "100%": {
+      transform: "scale(2.4)",
+      opacity: 0,
+    },
+  },
+}));
 
 export default function LoginDialog(props) {
   const [token, setToken] = React.useState(localStorage.getItem("login_token"));
   const [open, setOpen] = React.useState(false);
+  const [owner, setOwner] = React.useState();
   const [username, setUsername] = React.useState();
   const [password, setPassword] = React.useState();
   const [reUsername, setReUsername] = React.useState();
@@ -21,6 +57,18 @@ export default function LoginDialog(props) {
   const [hidden, setHidden] = React.useState(false);
   const [hiddenAlert, setHiddenAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleAnClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleAnClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openAn = Boolean(anchorEl);
+  const id = openAn ? "simple-popover" : undefined;
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -70,12 +118,13 @@ export default function LoginDialog(props) {
   const handleLogin = async () => {
     const res = await props.onHandleLogin(username, password);
     if (res[0] === true) {
+      window.location.reload();
+      window.scrollTo(0, document.body.scrollHeight);
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
       setUsername();
       setPassword();
-      window.location.reload();
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
@@ -85,13 +134,14 @@ export default function LoginDialog(props) {
   const handleRegister = async () => {
     const res = await props.onHandleRegister(reUsername, rePassword, reEmail);
     if (res[0] === true) {
+      window.location.reload();
+      window.scrollTo(0, document.body.scrollHeight);
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
       setReUsername();
       setRePassword();
       setReEmail();
-      window.location.reload();
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
@@ -99,10 +149,12 @@ export default function LoginDialog(props) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("login_token");
-    setToken();
     window.location.reload();
     window.scrollTo(0, document.body.scrollHeight);
+    localStorage.removeItem("login_token");
+    setAnchorEl(null);
+    setOwner();
+    setToken();
   };
 
   React.useEffect(() => {
@@ -110,6 +162,9 @@ export default function LoginDialog(props) {
       setHidden(true);
     } else {
       setHidden(false);
+    }
+    if (localStorage.getItem("login_token")) {
+      setOwner(JwtDecode(localStorage.getItem("login_token"))["username"]);
     }
   }, [token]);
 
@@ -120,9 +175,42 @@ export default function LoginDialog(props) {
           登入
         </Button>
       ) : (
-        <Button variant="contained" onClick={handleLogout}>
-          登出
-        </Button>
+        <div>
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            variant="dot"
+          >
+            <Avatar alt={owner} src="no" onClick={handleAnClick} />
+          </StyledBadge>
+          <Popover
+            id={id}
+            open={openAn}
+            anchorEl={anchorEl}
+            onClose={handleAnClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <div>
+              <Profile owner={owner}/>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button onClick={handleLogout}>登出</Button>
+            </div>
+          </Popover>
+        </div>
       )}
       <Dialog open={open} onClose={handleClose}>
         <AppBar position="static" color="default">
