@@ -166,9 +166,19 @@ export default function MessageBoard(props) {
                         variant="body2"
                         color="text.primary"
                       >
-                        {new Date(message.createdAt).toLocaleString("en-US", {
-                          timeZone: "Asia/Taipei",
-                        })}
+                        {message.createdAt === message.updatedAt
+                          ? new Date(message.createdAt).toLocaleString(
+                              "en-US",
+                              {
+                                timeZone: "Asia/Taipei",
+                              }
+                            )
+                          : new Date(message.updatedAt).toLocaleString(
+                              "en-US",
+                              {
+                                timeZone: "Asia/Taipei",
+                              }
+                            )+" 編輯"}
                       </Typography>
                     </React.Fragment>
                   }
