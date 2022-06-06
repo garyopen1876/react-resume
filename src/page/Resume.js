@@ -8,9 +8,11 @@ import Collections from "../components/Collections.js";
 import Grid from "@mui/material/Grid";
 import axios from "../Axios.config.js";
 import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function Resume() {
   const [messageData, setMessageData] = React.useState([]);
+  const [hiddenLoading, setHiddenLoading] = React.useState(true);
 
   const loadingData = React.useCallback(() => {
     const loadData = async () => {
@@ -19,6 +21,7 @@ function Resume() {
         .then((response) => {
           const resMessageData = response["data"]["data"];
           setMessageData(resMessageData);
+          setHiddenLoading(false);
         })
         .catch((error) => {
           console.log(error.response.data["message"]);
@@ -79,7 +82,7 @@ function Resume() {
 
   const onHandleRegister = async (username, password, email) => {
     let registerCheck = [false, ""];
-    if (!username || !password|| !email) {
+    if (!username || !password || !email) {
       return [false, "請填入帳號、密碼、Email"];
     }
 
@@ -237,15 +240,21 @@ function Resume() {
                     borderColor: "#FFF3DE",
                   }}
                 />
-                <MessageBoard
-                  data={messageData}
-                  sendMessage={sendMessage}
-                  onHandleLogin={onHandleLogin}
-                  onHandleRegister={onHandleRegister}
-                  deleteMessage={deleteMessage}
-                  editMessage={editMessage}
-                />
               </Grid>
+              {hiddenLoading ? (
+                <CircularProgress color="inherit" />
+              ) : (
+                <Grid container justifyContent="center" alignItems="center">
+                  <MessageBoard
+                    data={messageData}
+                    sendMessage={sendMessage}
+                    onHandleLogin={onHandleLogin}
+                    onHandleRegister={onHandleRegister}
+                    deleteMessage={deleteMessage}
+                    editMessage={editMessage}
+                  />
+                </Grid>
+              )}
               <div>&nbsp;</div>
             </div>
           </div>

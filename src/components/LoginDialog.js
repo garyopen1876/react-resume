@@ -51,6 +51,7 @@ export default function LoginDialog(props) {
 
   const handleChange = (e, newValue) => {
     setValue(newValue);
+    setHiddenAlert(false);
   };
 
   const handleChangeIndex = (index) => {
@@ -101,6 +102,7 @@ export default function LoginDialog(props) {
     localStorage.removeItem("login_token");
     setToken();
     window.location.reload();
+    window.scrollTo(0, document.body.scrollHeight);
   };
 
   React.useEffect(() => {

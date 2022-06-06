@@ -28,13 +28,14 @@ export default function EditMessage(props) {
 
   const handleEdit = async (message_id) => {
     if (props.messageContent === content) {
-      console.log("沒變");
+      console.log("no change");
     } else {
       const editCheck = await props.editMessage(message_id, content);
       if (editCheck[1] === "token錯誤") {
         localStorage.removeItem("login_token");
         alert("登入逾時，請重新登入");
         window.location.reload();
+        window.scrollTo(0, document.body.scrollHeight);
       }
     }
     setOpen(false);

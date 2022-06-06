@@ -16,11 +16,20 @@ import messagePaper from "../img/message_paper.jpg";
 import JwtDecode from "jwt-decode";
 import EditIcon from "./EditMessage";
 import DeleteIcon from "./DeleteMessage";
+import Pagination from "@mui/material/Pagination";
 
 export default function MessageBoard(props) {
   const [messageContent, setMessageContent] = React.useState("");
   const [username, setUsername] = React.useState("");
-  
+  const itemsPerPage = 5;
+  const [page, setPage] = React.useState(1);
+
+  const [noOfPages, setNoOfPages] = React.useState();
+
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
+
   const handleSend = async () => {
     const sendCheck = await props.sendMessage(messageContent);
     setMessageContent("");
@@ -28,6 +37,7 @@ export default function MessageBoard(props) {
       localStorage.removeItem("login_token");
       alert("登入逾時，請重新登入");
       window.location.reload();
+      window.scrollTo(0, document.body.scrollHeight);
     }
   };
 
@@ -35,7 +45,8 @@ export default function MessageBoard(props) {
     if (localStorage.getItem("login_token")) {
       setUsername(JwtDecode(localStorage.getItem("login_token"))["username"]);
     }
-  }, []);
+    setNoOfPages(Math.ceil(props.data.length / itemsPerPage));
+  }, [props.data]);
 
   return (
     <List
@@ -47,73 +58,94 @@ export default function MessageBoard(props) {
         backgroundImage: `url(${messageBackground})`,
       }}
     >
-      {props.data.map((message) => (
-        <div>
-          <Box
-            sx={{
-              width: "90%",
-              margin: "auto",
-              backgroundImage: `url(${messagePaper})`,
-            }}
-          >
-            {message.owner === username ? (
-              <div style={{ textAlign: "right" }}>
-                <IconButton size="small">
-                  <EditIcon
-                    editMessage={props.editMessage}
-                    messageId={message.id}
-                    messageContent={message.content}
-                  />
-                </IconButton>
-                <IconButton size="small">
-                  <DeleteIcon
-                    deleteMessage={props.deleteMessage}
-                    messageId={message.id}
-                  />
-                </IconButton>
-              </div>
-            ) : null}
-            <ListItem
-              alignItems="flex-start"
+      {props.data
+        .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+        .map((message) => (
+          <div>
+            <Box
               sx={{
-                width: "100%",
+                width: "90%",
                 margin: "auto",
+                backgroundImage: `url(${messagePaper})`,
               }}
             >
-              <ListItemAvatar>
-                <Avatar alt={message.owner} src="https://anitar.dev/get/r" />
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Typography
-                    variant="body2"
-                    color="text.primary"
-                    sx={{ fontWeight: "bold" }}
-                  >
-                    {message.owner}
-                  </Typography>
-                }
-                secondary={
-                  <React.Fragment>
-                    <Typography variant="body2" color="text.primary">
-                      {message.content}
-                    </Typography>
+              {message.owner === username ? (
+                <div style={{ textAlign: "right" }}>
+                  <IconButton size="small">
+                    <EditIcon
+                      editMessage={props.editMessage}
+                      messageId={message.id}
+                      messageContent={message.content}
+                    />
+                  </IconButton>
+                  <IconButton size="small">
+                    <DeleteIcon
+                      deleteMessage={props.deleteMessage}
+                      messageId={message.id}
+                    />
+                  </IconButton>
+                </div>
+              ) : null}
+              <ListItem
+                alignItems="flex-start"
+                sx={{
+                  width: "100%",
+                  margin: "auto",
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar alt={message.owner} src="https://anitar.dev/get/r" />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
                     <Typography
-                      align="right"
                       variant="body2"
                       color="text.primary"
+                      sx={{ fontWeight: "bold" }}
                     >
-                      {message.createdAt.split(/[T.]/)[0]}{" "}
-                      {message.createdAt.split(/[T.]/)[1]}
+                      {message.owner}
                     </Typography>
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-          </Box>
-          <div>&nbsp;</div>
-        </div>
-      ))}
+                  }
+                  secondary={
+                    <React.Fragment>
+                      <Typography variant="body2" color="text.primary">
+                        {message.content}
+                      </Typography>
+                      <Typography
+                        align="right"
+                        variant="body2"
+                        color="text.primary"
+                      >
+                        {message.createdAt.split(/[T.]/)[0]}{" "}
+                        {message.createdAt.split(/[T.]/)[1]}
+                      </Typography>
+                    </React.Fragment>
+                  }
+                />
+              </ListItem>
+            </Box>
+            <div>&nbsp;</div>
+          </div>
+        ))}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#D8D8EB",
+          width: "50%",
+          margin: "auto",
+        }}
+      >
+        <Pagination
+          count={noOfPages}
+          page={page}
+          onChange={handleChange}
+          defaultPage={noOfPages}
+          variant="outlined"
+          color="secondary"
+        />
+      </div>
       <hr
         style={{
           width: "95%",
@@ -132,7 +164,10 @@ export default function MessageBoard(props) {
           margin: "auto",
         }}
       >
-        <LoginDialog onHandleLogin={props.onHandleLogin} onHandleRegister={props.onHandleRegister}/>
+        <LoginDialog
+          onHandleLogin={props.onHandleLogin}
+          onHandleRegister={props.onHandleRegister}
+        />
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder="請輸入留言"

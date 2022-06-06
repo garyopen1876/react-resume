@@ -26,6 +26,7 @@ export default function DeleteMessage(props) {
       localStorage.removeItem("login_token");
       alert("登入逾時，請重新登入");
       window.location.reload();
+      window.scrollTo(0, document.body.scrollHeight);
     }
   };
 
