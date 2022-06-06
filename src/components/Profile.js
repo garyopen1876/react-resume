@@ -14,6 +14,7 @@ export default function Profile(props) {
   };
 
   const handleClose = () => {
+    props.handleAnClose();
     setOpen(false);
   };
 

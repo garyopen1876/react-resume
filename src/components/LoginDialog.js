@@ -198,7 +198,7 @@ export default function LoginDialog(props) {
             }}
           >
             <div>
-              <Profile owner={owner}/>
+              <Profile owner={owner} handleAnClose={handleAnClose}/>
             </div>
             <div
               style={{
