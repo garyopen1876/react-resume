@@ -13,6 +13,8 @@ import SendIcon from "@mui/icons-material/Send";
 import LoginDialog from "./LoginDialog.js";
 import messageBackground from "../img/message_background.jpg";
 import messagePaper from "../img/message_paper.jpg";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import JwtDecode from "jwt-decode";
 import EditIcon from "./EditMessage";
 import DeleteIcon from "./DeleteMessage";
@@ -20,14 +22,29 @@ import Pagination from "@mui/material/Pagination";
 
 export default function MessageBoard(props) {
   const [messageContent, setMessageContent] = React.useState("");
+  const [searchKeyword, setSearchKeyword] = React.useState("");
   const [username, setUsername] = React.useState("");
   const itemsPerPage = 5;
   const [page, setPage] = React.useState(1);
-
   const [noOfPages, setNoOfPages] = React.useState();
+
+  const onChangeKeyword = (e) => {
+    const keyword = e.target.value;
+    setSearchKeyword(keyword);
+  };
+
+  const onChangeContent = (e) => {
+    const content = e.target.value;
+    setMessageContent(content);
+  };
 
   const handleChange = (event, value) => {
     setPage(value);
+  };
+
+  const handleSearchClear = () => {
+    props.loadingData();
+    setSearchKeyword("");
   };
 
   const handleSend = async () => {
@@ -41,12 +58,17 @@ export default function MessageBoard(props) {
     }
   };
 
+  const handleSearch = async () => {
+    await props.searchData(searchKeyword);
+  };
+
   React.useEffect(() => {
     if (localStorage.getItem("login_token")) {
       setUsername(JwtDecode(localStorage.getItem("login_token"))["username"]);
     }
     setNoOfPages(Math.ceil(props.data.length / itemsPerPage));
-  }, [props.data]);
+    setPage(noOfPages);
+  }, [noOfPages, props.data]);
 
   return (
     <List
@@ -58,6 +80,34 @@ export default function MessageBoard(props) {
         backgroundImage: `url(${messageBackground})`,
       }}
     >
+      <div
+        style={{ display: "flex", justifyContent: "flex-end", margin: "5px" }}
+      >
+        <Box
+          sx={{
+            borderRadius: "16px",
+            width: "30%",
+            backgroundColor: "white",
+          }}
+        >
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="搜尋留言"
+            value={searchKeyword ? searchKeyword : ""}
+            onChange={onChangeKeyword}
+            inputProps={{ maxLength: 50 }}
+          />
+          {searchKeyword ? (
+            <IconButton onClick={handleSearchClear}>
+              <ClearIcon />
+            </IconButton>
+          ) : null}
+          <IconButton onClick={handleSearch}>
+            <SearchIcon />
+          </IconButton>
+        </Box>
+      </div>
+      <div>&nbsp;</div>
       {props.data
         .slice((page - 1) * itemsPerPage, page * itemsPerPage)
         .map((message) => (
@@ -140,7 +190,6 @@ export default function MessageBoard(props) {
           count={noOfPages}
           page={page}
           onChange={handleChange}
-          defaultPage={noOfPages}
           color="secondary"
         />
       </div>
@@ -170,9 +219,7 @@ export default function MessageBoard(props) {
           sx={{ ml: 1, flex: 1 }}
           placeholder="請輸入留言"
           value={messageContent ? messageContent : ""}
-          onChange={(event) => {
-            setMessageContent(event.target.value);
-          }}
+          onChange={onChangeContent}
           inputProps={{ maxLength: 50 }}
         />
         <IconButton

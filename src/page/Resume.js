@@ -30,6 +30,20 @@ function Resume() {
     loadData();
   }, []);
 
+  const searchData = async (searchKeyword) => {
+    await axios
+      .get("api/messagesearch",{
+        params: { keyword: searchKeyword }
+      })
+      .then((response) => {
+        const resMessageData = response["data"]["data"];
+        setMessageData(resMessageData);
+      })
+      .catch((error) => {
+        console.log(error.response.data["message"]);
+      });
+  };
+
   const sendMessage = async (message_content) => {
     let sendCheck = [false, ""];
     let head = {};
@@ -252,6 +266,8 @@ function Resume() {
                     onHandleRegister={onHandleRegister}
                     deleteMessage={deleteMessage}
                     editMessage={editMessage}
+                    searchData={searchData}
+                    loadingData={loadingData}
                   />
                 </Grid>
               )}
