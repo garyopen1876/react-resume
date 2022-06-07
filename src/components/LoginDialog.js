@@ -15,6 +15,7 @@ import Badge from "@mui/material/Badge";
 import Popover from "@mui/material/Popover";
 import Profile from "./Profile";
 import JwtDecode from "jwt-decode";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -58,6 +59,7 @@ export default function LoginDialog(props) {
   const [hiddenAlert, setHiddenAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [hiddenLoading, setHiddenLoading] = React.useState(false);
 
   const handleAnClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -118,13 +120,14 @@ export default function LoginDialog(props) {
   const handleLogin = async () => {
     const res = await props.onHandleLogin(username, password);
     if (res[0] === true) {
-      window.location.reload();
-      window.scrollTo(0, document.body.scrollHeight);
+      setHiddenLoading(true)
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
       setUsername();
       setPassword();
+      window.location.reload();
+      window.scrollTo(0, document.body.scrollHeight);
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
@@ -134,27 +137,29 @@ export default function LoginDialog(props) {
   const handleRegister = async () => {
     const res = await props.onHandleRegister(reUsername, rePassword, reEmail);
     if (res[0] === true) {
-      window.location.reload();
-      window.scrollTo(0, document.body.scrollHeight);
+      setHiddenLoading(true)
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
       setReUsername();
       setRePassword();
       setReEmail();
+      window.location.reload();
+      window.scrollTo(0, document.body.scrollHeight);
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
     }
   };
 
-  const handleLogout = () => {
-    window.location.reload();
-    window.scrollTo(0, document.body.scrollHeight);
+  const handleLogout = async () => {
+    setHiddenLoading(true)
     localStorage.removeItem("login_token");
     setAnchorEl(null);
     setOwner();
     setToken();
+    window.location.reload();
+    window.scrollTo(0, document.body.scrollHeight);
   };
 
   React.useEffect(() => {
@@ -170,7 +175,9 @@ export default function LoginDialog(props) {
 
   return (
     <div>
-      {!hidden ? (
+      {hiddenLoading ? (
+        <CircularProgress />
+      ) : !hidden ? (
         <Button variant="contained" onClick={handleClickOpen}>
           登入
         </Button>
@@ -198,7 +205,7 @@ export default function LoginDialog(props) {
             }}
           >
             <div>
-              <Profile owner={owner} handleAnClose={handleAnClose}/>
+              <Profile owner={owner} handleAnClose={handleAnClose} />
             </div>
             <div
               style={{
@@ -239,6 +246,7 @@ export default function LoginDialog(props) {
                 label="帳號"
                 type="text"
                 fullWidth
+                required
                 variant="standard"
                 onChange={onChangeUsername}
               />
@@ -248,6 +256,7 @@ export default function LoginDialog(props) {
                 label="密碼"
                 type="password"
                 fullWidth
+                required
                 variant="standard"
                 onChange={onChangePassword}
               />
@@ -268,6 +277,7 @@ export default function LoginDialog(props) {
                 label="帳號"
                 type="text"
                 fullWidth
+                required
                 variant="standard"
                 onChange={onChangeReUsername}
               />
@@ -277,6 +287,7 @@ export default function LoginDialog(props) {
                 label="密碼"
                 type="password"
                 fullWidth
+                required
                 variant="standard"
                 onChange={onChangeRePassword}
               />
@@ -286,6 +297,7 @@ export default function LoginDialog(props) {
                 label="email"
                 type="text"
                 fullWidth
+                required
                 variant="standard"
                 onChange={onChangeReEmail}
               />

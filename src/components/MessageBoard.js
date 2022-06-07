@@ -19,14 +19,28 @@ import JwtDecode from "jwt-decode";
 import EditIcon from "./EditMessage";
 import DeleteIcon from "./DeleteMessage";
 import Pagination from "@mui/material/Pagination";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export default function MessageBoard(props) {
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [messageContent, setMessageContent] = React.useState("");
   const [searchKeyword, setSearchKeyword] = React.useState("");
   const [username, setUsername] = React.useState("");
   const itemsPerPage = 5;
   const [page, setPage] = React.useState(1);
   const [noOfPages, setNoOfPages] = React.useState();
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   const onChangeKeyword = (e) => {
     const keyword = e.target.value;
@@ -55,6 +69,8 @@ export default function MessageBoard(props) {
       alert("登入逾時，請重新登入");
       window.location.reload();
       window.scrollTo(0, document.body.scrollHeight);
+    } else if (sendCheck[1] === "留言內容為空") {
+      setOpenSnackbar(true);
     }
   };
 
@@ -178,7 +194,7 @@ export default function MessageBoard(props) {
                               {
                                 timeZone: "Asia/Taipei",
                               }
-                            )+" 編輯"}
+                            ) + " 編輯"}
                       </Typography>
                     </React.Fragment>
                   }
@@ -240,6 +256,20 @@ export default function MessageBoard(props) {
         >
           <SendIcon />
         </IconButton>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          open={openSnackbar}
+          autoHideDuration={1000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            留言內容不得為空
+          </Alert>
+        </Snackbar>
       </Paper>
     </List>
   );

@@ -32,7 +32,13 @@ export default function Profile(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            很感謝您對於本網站的支持，以下是您曾提供的意見，希望您能持續回饋使我們進步。
+            這是您今天的幸運圖片，你是否能從中看出什麼?
+          </DialogContentText>
+          <div style={{display: 'flex', justifyContent:'center', alignItems:'center'}}>
+            <img src={"https://picsum.photos/300"} alt="today" />
+          </div>
+          <DialogContentText id="alert-dialog-description">
+            很感謝您對於本網站的支持，希望您能持續回饋使我們進步。
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -32,8 +32,8 @@ function Resume() {
 
   const searchData = async (searchKeyword) => {
     await axios
-      .get("api/messagesearch",{
-        params: { keyword: searchKeyword }
+      .get("api/messagesearch", {
+        params: { keyword: searchKeyword },
       })
       .then((response) => {
         const resMessageData = response["data"]["data"];
@@ -267,7 +267,6 @@ function Resume() {
                     deleteMessage={deleteMessage}
                     editMessage={editMessage}
                     searchData={searchData}
-                    loadingData={loadingData}
                   />
                 </Grid>
               )}
