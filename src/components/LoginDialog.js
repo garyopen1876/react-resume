@@ -16,6 +16,8 @@ import Popover from "@mui/material/Popover";
 import Profile from "./Profile";
 import JwtDecode from "jwt-decode";
 import CircularProgress from "@mui/material/CircularProgress";
+import GoogleIcon from "@mui/icons-material/Google";
+import { gapi, loadAuth2 } from "gapi-script";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -117,10 +119,40 @@ export default function LoginDialog(props) {
     setOpen(false);
   };
 
+  const handleGoogleLogin = async () => {
+    const auth2 = await loadAuth2(gapi, process.env.REACT_APP_CLIENT_ID, "");
+    auth2.attachClickHandler(
+      document.getElementById("googleBtn"),
+      {},
+      async (googleUser) => {
+        console.log(googleUser.getBasicProfile().getEmail());
+        const res = await props.onHandleGoogleLogin(
+          googleUser.getBasicProfile().getEmail()
+        );
+        if (res[0] === true) {
+          setHiddenLoading(true);
+          setToken(localStorage.getItem("login_token"));
+          setHiddenAlert(false);
+          setOpen(false);
+          setUsername();
+          setPassword();
+          window.location.reload();
+          window.scrollTo(0, document.body.scrollHeight);
+        } else {
+          setHiddenAlert(true);
+          setAlertMessage(res[1]);
+        }
+      },
+      (error) => {
+        console.log(JSON.stringify(error));
+      }
+    );
+  };
+
   const handleLogin = async () => {
     const res = await props.onHandleLogin(username, password);
     if (res[0] === true) {
-      setHiddenLoading(true)
+      setHiddenLoading(true);
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
@@ -137,7 +169,7 @@ export default function LoginDialog(props) {
   const handleRegister = async () => {
     const res = await props.onHandleRegister(reUsername, rePassword, reEmail);
     if (res[0] === true) {
-      setHiddenLoading(true)
+      setHiddenLoading(true);
       setToken(localStorage.getItem("login_token"));
       setHiddenAlert(false);
       setOpen(false);
@@ -153,7 +185,7 @@ export default function LoginDialog(props) {
   };
 
   const handleLogout = async () => {
-    setHiddenLoading(true)
+    setHiddenLoading(true);
     localStorage.removeItem("login_token");
     setAnchorEl(null);
     setOwner();
@@ -265,6 +297,22 @@ export default function LoginDialog(props) {
               <Button onClick={handleClose}>取消</Button>
               <Button onClick={handleLogin}>登入</Button>
             </DialogActions>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                id="googleBtn"
+                variant="contained"
+                onClick={handleGoogleLogin}
+              >
+                <GoogleIcon />
+                Google登入
+              </Button>
+            </div>
           </div>
           <div value={value} index={1}>
             {hiddenAlert ? (

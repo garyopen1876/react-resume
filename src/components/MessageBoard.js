@@ -240,6 +240,7 @@ export default function MessageBoard(props) {
         <LoginDialog
           onHandleLogin={props.onHandleLogin}
           onHandleRegister={props.onHandleRegister}
+          onHandleGoogleLogin={props.onHandleGoogleLogin}
         />
         <InputBase
           sx={{ ml: 1, flex: 1 }}

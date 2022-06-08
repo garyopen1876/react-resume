@@ -94,6 +94,25 @@ function Resume() {
     return loginCheck;
   };
 
+  const onHandleGoogleLogin = async (mail) => {
+    let loginGoogleCheck = [false, ""];
+
+    await axios
+      .post("/api/googlelogin", {
+        username: mail.split("@")[0],
+        mail: mail,
+      })
+      .then((response) => {
+        const token = response["data"]["token"];
+        localStorage.setItem("login_token", token);
+        loginGoogleCheck = [true, response.data["message"]];
+      })
+      .catch((error) => {
+        loginGoogleCheck = [false, error.response.data["message"]];
+      });
+    return loginGoogleCheck;
+  };
+
   const onHandleRegister = async (username, password, email) => {
     let registerCheck = [false, ""];
     if (!username || !password || !email) {
@@ -268,6 +287,7 @@ function Resume() {
                     editMessage={editMessage}
                     searchData={searchData}
                     loadingData={loadingData}
+                    onHandleGoogleLogin={onHandleGoogleLogin}
                   />
                 </Grid>
               )}
