@@ -274,6 +274,20 @@ function Resume() {
                   }}
                 />
               </Grid>
+              <Typography
+                variant="body2"
+                color="text.primary"
+                sx={{ width:"100%",fontWeight: "bold" }}
+              >
+                😃感謝您閱讀完我的履歷，你不需登入即可留言😃
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.primary"
+                sx={{ width:"100%",fontWeight: "bold" }}
+              >
+                😊如果想留下您的大名，歡迎註冊留言😊
+              </Typography>
               {hiddenLoading ? (
                 <CircularProgress color="inherit" />
               ) : (

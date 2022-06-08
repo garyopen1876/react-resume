@@ -32,7 +32,7 @@ export default function Profile(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            這是您今天的幸運圖片，你是否能從中看出什麼?
+            這是您今天的幸運圖片，是否能從中看出什麼?
           </DialogContentText>
           <div style={{display: 'flex', justifyContent:'center', alignItems:'center'}}>
             <img src={"https://picsum.photos/300"} alt="today" />
