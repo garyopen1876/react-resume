@@ -267,6 +267,7 @@ function Resume() {
                     deleteMessage={deleteMessage}
                     editMessage={editMessage}
                     searchData={searchData}
+                    loadingData={loadingData}
                   />
                 </Grid>
               )}
