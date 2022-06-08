@@ -120,13 +120,11 @@ export default function LoginDialog(props) {
   };
 
   const handleGoogleLogin = async () => {
-    console.log(process.env.REACT_APP_CLIENT_ID)
     const auth2 = await loadAuth2(gapi, process.env.REACT_APP_CLIENT_ID, "");
     auth2.attachClickHandler(
       document.getElementById("googleBtn"),
       {},
       async (googleUser) => {
-        console.log(googleUser.getBasicProfile().getEmail());
         const res = await props.onHandleGoogleLogin(
           googleUser.getBasicProfile().getEmail()
         );
