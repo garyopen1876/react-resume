@@ -62,6 +62,11 @@ export default function LoginDialog(props) {
   const [alertMessage, setAlertMessage] = React.useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [hiddenLoading, setHiddenLoading] = React.useState(false);
+  const [inputErrorU, setInputErrorU] = React.useState(false);
+  const [inputErrorP, setInputErrorP] = React.useState(false);
+  const [inputErrorRU, setInputErrorRU] = React.useState(false);
+  const [inputErrorRP, setInputErrorRP] = React.useState(false);
+  const [inputErrorRE, setInputErrorRE] = React.useState(false);
 
   const handleAnClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -104,6 +109,11 @@ export default function LoginDialog(props) {
   const handleChange = (e, newValue) => {
     setValue(newValue);
     setHiddenAlert(false);
+    setInputErrorU(false);
+    setInputErrorP(false);
+    setInputErrorRU(false);
+    setInputErrorRP(false);
+    setInputErrorRE(false);
   };
 
   const handleChangeIndex = (index) => {
@@ -115,6 +125,16 @@ export default function LoginDialog(props) {
   };
 
   const handleClose = () => {
+    setInputErrorU(false);
+    setInputErrorP(false);
+    setInputErrorRU(false);
+    setInputErrorRP(false);
+    setInputErrorRE(false);
+    setUsername();
+    setPassword();
+    setReUsername();
+    setRePassword();
+    setReEmail();
     setHiddenAlert(false);
     setOpen(false);
   };
@@ -149,6 +169,8 @@ export default function LoginDialog(props) {
   };
 
   const handleLogin = async () => {
+    setInputErrorU(false);
+    setInputErrorP(false);
     const res = await props.onHandleLogin(username, password);
     if (res[0] === true) {
       setHiddenLoading(true);
@@ -162,10 +184,19 @@ export default function LoginDialog(props) {
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
+      if (res[1].indexOf("帳號 ") >= 0) {
+        setInputErrorU(true);
+      }
+      if (res[1].indexOf("密碼 ") >= 0) {
+        setInputErrorP(true);
+      }
     }
   };
 
   const handleRegister = async () => {
+    setInputErrorRU(false);
+    setInputErrorRP(false);
+    setInputErrorRE(false);
     const res = await props.onHandleRegister(reUsername, rePassword, reEmail);
     if (res[0] === true) {
       setHiddenLoading(true);
@@ -180,6 +211,15 @@ export default function LoginDialog(props) {
     } else {
       setHiddenAlert(true);
       setAlertMessage(res[1]);
+      if (res[1].indexOf("帳號") >= 0) {
+        setInputErrorRU(true);
+      }
+      if (res[1].indexOf("密碼 ") >= 0) {
+        setInputErrorRP(true);
+      }
+      if (res[1].indexOf("Email") >= 0) {
+        setInputErrorRE(true);
+      }
     }
   };
 
@@ -272,6 +312,7 @@ export default function LoginDialog(props) {
             <DialogContent>
               <TextField
                 autoFocus
+                error={inputErrorU}
                 margin="dense"
                 id="username"
                 label="帳號"
@@ -280,8 +321,10 @@ export default function LoginDialog(props) {
                 required
                 variant="standard"
                 onChange={onChangeUsername}
+                inputProps={{ maxLength: 30 }}
               />
               <TextField
+                error={inputErrorP}
                 margin="dense"
                 id="password"
                 label="密碼"
@@ -290,6 +333,7 @@ export default function LoginDialog(props) {
                 required
                 variant="standard"
                 onChange={onChangePassword}
+                inputProps={{ maxLength: 30 }}
               />
             </DialogContent>
             <DialogActions>
@@ -319,6 +363,7 @@ export default function LoginDialog(props) {
             ) : null}
             <DialogContent>
               <TextField
+                error={inputErrorRU}
                 margin="dense"
                 id="username"
                 label="帳號"
@@ -327,8 +372,10 @@ export default function LoginDialog(props) {
                 required
                 variant="standard"
                 onChange={onChangeReUsername}
+                inputProps={{ maxLength: 30 }}
               />
               <TextField
+                error={inputErrorRP}
                 margin="dense"
                 id="password"
                 label="密碼"
@@ -337,8 +384,10 @@ export default function LoginDialog(props) {
                 required
                 variant="standard"
                 onChange={onChangeRePassword}
+                inputProps={{ maxLength: 30 }}
               />
               <TextField
+                error={inputErrorRE}
                 margin="dense"
                 id="email"
                 label="email"
@@ -347,6 +396,7 @@ export default function LoginDialog(props) {
                 required
                 variant="standard"
                 onChange={onChangeReEmail}
+                inputProps={{ maxLength: 70 }}
               />
             </DialogContent>
             <DialogActions>
