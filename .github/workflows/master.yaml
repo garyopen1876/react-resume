@@ -1,19 +1,23 @@
-name: Resume Deploy
-
+name: React App Deploy
 on:
   push:
-    branches:
-      - master
-
+    branches: [ master ]
+    
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    environment: master
     steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      - name: checkout 
+        uses: actions/checkout@v3
+
+      - name: ci and test and build 
+        run: |
+          npm ci
+          npm test
+          npm run build
+      - name: deploy
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "garyopen1876resume"
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          branch: gh-pages
+          folder: build
     
