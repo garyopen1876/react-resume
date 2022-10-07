@@ -10,11 +10,8 @@ jobs:
       - name: checkout 
         uses: actions/checkout@v3
 
-      - name: ci and test and build 
-        run: |
-          npm ci
-          npm test
-          npm run build
+      - name: build 
+        run: npm run build
       - name: deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
