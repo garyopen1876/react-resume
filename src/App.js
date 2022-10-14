@@ -13,7 +13,7 @@ export default function App() {
     <TokenContext.Provider value={{ tokenContext, setTokenContext }}>
       <Router>
         <Routes>
-          <Route path="/" element={<Resume />} />
+          <Route path="/react-resume" element={<Resume />} />
         </Routes>
       </Router>
     </TokenContext.Provider>
