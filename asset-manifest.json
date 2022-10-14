@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/react-resume/static/css/main.3796b9a7.css",
-    "main.js": "/react-resume/static/js/main.94a13a8d.js",
+    "main.js": "/react-resume/static/js/main.f08c0120.js",
     "static/js/787.be9df7c6.chunk.js": "/react-resume/static/js/787.be9df7c6.chunk.js",
     "static/media/FCU_b.png": "/react-resume/static/media/FCU_b.2e9bf9bc34c50674fdd6.png",
     "static/media/Inject_b.png": "/react-resume/static/media/Inject_b.cc19d285e41a49c35231.png",
@@ -28,11 +28,11 @@
     "static/media/ASP.NET_Core.png": "/react-resume/static/media/ASP.NET_Core.2bbbf34678e3c9246efa.png",
     "index.html": "/react-resume/index.html",
     "main.3796b9a7.css.map": "/react-resume/static/css/main.3796b9a7.css.map",
-    "main.94a13a8d.js.map": "/react-resume/static/js/main.94a13a8d.js.map",
+    "main.f08c0120.js.map": "/react-resume/static/js/main.f08c0120.js.map",
     "787.be9df7c6.chunk.js.map": "/react-resume/static/js/787.be9df7c6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3796b9a7.css",
-    "static/js/main.94a13a8d.js"
+    "static/js/main.f08c0120.js"
   ]
 }
